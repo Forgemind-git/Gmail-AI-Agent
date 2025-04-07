@@ -6,7 +6,7 @@ This n8n workflow powers an AI email assistant that generates personalized email
 
 ## 🔧 Features
 
-- 📨 Triggered by a chat message (via LangChain Chat Trigger)
+- 📨 Triggered by a chat message (via Chat Trigger)
 - 🤖 Uses GPT-4o Mini to generate custom email drafts
 - 📋 Retrieves contact and tone information from Google Sheets
 - 💬 Supports memory for contextual interactions
