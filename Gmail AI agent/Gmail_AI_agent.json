@@ -1,0 +1,203 @@
+{
+  "name": "Gmail AI agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4acc02ac-8566-4c0a-9875-e56f78b37509",
+      "name": "When chat message received",
+      "webhookId": "4797a7b8-e511-4c45-8760-85bf2f847de8"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are an AI email assistant connected to a spreadsheet. Each row contains the following fields:\n\nMail ID (email address of the recipient)\nName (recipient's name)\nPersonality (a brief descriptor such as \"formal\", \"friendly\", \"casual\", \"enthusiastic\", etc.)\n\nYour task is to generate email drafts tailored to each contact using the data from the sheet.\nHere’s how you must operate:\nUse the Mail ID to identify the correct row in the sheet.\nRetrieve the Name and Personality fields for that Mail ID.\n\nGenerate a personalized and relevant email draft based on:\nThe recipient’s name (use it in a natural way).\nThe tone/style defined by the \"Personality\" field. Adapt the vocabulary, formality, and sentence structure accordingly.\nKeep the email body concise, polite, and purpose-driven.\nDo not send the email—only return a well-formatted draft.\n\nExample personality styles you may encounter and how to adapt:\nFormal: Use professional language, proper greetings, and full sentences.\nFriendly: Be warm, approachable, and conversational.\nCasual: Keep it relaxed, use contractions, and sound natural.\nEnthusiastic: Show excitement, use exclamation marks sparingly, and be upbeat.\n\nReturn the email draft as a plain text block with this structure:\nTo: Mail ID\nSubject: Subject Line\nBody:\nHi Name,\n\nBody based on personality tone\n\nBest regards,  \nForgemind AI\n\nStay consistent in tone and ensure the draft is suitable for the specified personality. Never guess fields—only act on what the sheet provides.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        220,
+        0
+      ],
+      "id": "2bd3f807-2673-4fd1-ab7b-bd614c716391",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        200
+      ],
+      "id": "ae8f7535-37a7-4f8f-a6c8-e2847a397d9d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "fXnb72fXrjg7aJzy",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        340,
+        200
+      ],
+      "id": "b6814d4c-b9fd-468b-99c2-b3ab7afc0edc",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yrR0zPs1xcFPuVxbbyOE_-wWvYXR6X-0dsPWmaUI32A",
+          "mode": "list",
+          "cachedResultName": "Ai agent Mail details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yrR0zPs1xcFPuVxbbyOE_-wWvYXR6X-0dsPWmaUI32A/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yrR0zPs1xcFPuVxbbyOE_-wWvYXR6X-0dsPWmaUI32A/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        200
+      ],
+      "id": "979660b3-bb53-4e72-af81-34c6adaf2856",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cXlNqv7wXjGnKVzO",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To_Email', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        500,
+        200
+      ],
+      "id": "b80a7966-61d4-4ab6-b924-c3fc7380bb41",
+      "name": "Gmail",
+      "webhookId": "04ae09fa-769c-4c3b-bc35-56106dd69705",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "1NZZVRZOyFOQgo6v",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "48649caf-221a-4bbd-b68b-d59b6762af5f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "030862b1dcaff3ff9cb8f16544487a6b16cf430e1deb04f332ab7722f5f563bd"
+  },
+  "id": "9FV8LxdLcnLZ1UMB",
+  "tags": [
+    {
+      "createdAt": "2025-03-19T18:28:36.886Z",
+      "updatedAt": "2025-03-19T18:28:36.886Z",
+      "id": "xWn1tSWkEl41XVhY",
+      "name": "For Video"
+    }
+  ]
+}
